@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import environs
 
+env = environs.Env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,8 +79,12 @@ WSGI_APPLICATION = 'musicians_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('POSTGRES_DB'),
+        'USER': env.str('POSTGRES_USER'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD'),
+        'HOST': env.str('HOST_DB'),
+        'PORT': env.str('PORT_DB'),
     }
 }
 
@@ -131,6 +137,12 @@ REST_FRAMEWORK = {
 
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-
-
 }
+
+MEDIA_ROOT = 'media/img'
+
+EMAIL_HOST_USER = env.str('EMAIL')
+EMAIL_HOST_PASSWORD = env.str('EMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = env.str('EMAIL')
+
+BROKER_URL = "redis://localhost:6379/0"
