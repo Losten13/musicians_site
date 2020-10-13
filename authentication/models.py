@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
 
+from authentication.utils import upload_to
+
 
 class CustomUserManager(BaseUserManager):
 
@@ -32,11 +34,12 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', max_length=255, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    avatar_img = models.ImageField(upload_to='avatar/', blank=True, default=None)
+    avatar_img = models.ImageField(upload_to=upload_to, blank=True, default=None)
 
     objects = CustomUserManager()
 

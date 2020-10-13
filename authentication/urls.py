@@ -5,6 +5,6 @@ from authentication.views import RegisterApi
 
 urlpatterns = [
     path('', TokenObtainPairView.as_view(), name='auth'),
-    path('refresh/', TokenRefreshView.as_view(), name='auth_refresh'),
-    path('register/', RegisterApi.as_view(), name='auth_register'),
+    path('refresh/', TokenRefreshView.as_view(), name='auth-refresh'),
+    path('register/', RegisterApi.as_view(), name='auth-register'),
 ]

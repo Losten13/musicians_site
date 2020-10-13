@@ -15,7 +15,7 @@ from lessons.serializers import LessonSerializer, VoteSerializer
 from rest_framework.response import Response
 
 
-class LessonList(viewsets.ModelViewSet):
+class LessonViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
@@ -27,7 +27,7 @@ class LessonList(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save()
 
-    @action(detail=False, methods=['post'], name='match')
+    @action(detail=False, methods=['post'])
     def match(self, request):
         user_id = request.data['user_id']
         try:
@@ -40,20 +40,19 @@ class LessonList(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             return Response({'msg': 'Object doe not exist'}, status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=['post'], name='upvote')
-    def upvote(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path='toggle-like')
+    def toggle_like(self, request, *args, **kwargs):
         lesson = self.get_object()
         try:
-            vote = Vote.objects.get(voted=request.user.id, lesson=lesson.id).delete()
+            Vote.objects.get(voted=request.user.id, lesson=lesson.id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except ObjectDoesNotExist:
+        except Vote.DoesNotExist:
             vote = Vote.objects.create(voted=request.user, lesson=lesson)
             vote.save()
-            serializer = VoteSerializer(vote)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class VoteView(viewsets.ModelViewSet):
+class VoteViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer

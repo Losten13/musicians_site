@@ -17,7 +17,5 @@ class RegisterApi(GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.save()
-        send_registration_email.delay(serializer.data['email'])
-        return Response({
-            'msg': 'User created'
-        }, status=status.HTTP_201_CREATED)
+        send_registration_email.delay(user.email)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

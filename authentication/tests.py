@@ -1,6 +1,10 @@
 import io
 import tempfile
+from unittest.mock import patch
 
+from django.contrib.auth.hashers import check_password
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.test import TestCase
 
 from PIL import Image
@@ -12,26 +16,15 @@ from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import AccessToken
 
 from authentication.models import User
+from musicians_site.tests import APITestUser
 
 
-class APITestUser(APITestCase):
+class TestRegisterView(APITestUser):
 
-    def create_user(self, email, password):
-        user = User.objects.create_user(email, password)
-        user.is_active = True
-        user.save()
-        return user
+    def setUp(self) -> None:
+        self.email = 'test11@gmail.com'
+        self.password = '123qwe123'
 
-    def authorize(self, user, **additional_headers):
-        token = AccessToken.for_user(user)
-        self.client.credentials(
-            HTTP_AUTHORIZATION=f"{api_settings.AUTH_HEADER_TYPES[0]} {token}", **additional_headers
-        )
-
-    def create_and_authorize(self, email, password, **additional_headers):
-        user = self.create_user(email, password)
-        self.authorize(user, **additional_headers)
-        return user
 
     def generate_photo_file(self):
         file = io.BytesIO()
@@ -41,18 +34,21 @@ class APITestUser(APITestCase):
         file.seek(0)
         return file
 
-    def setUp(self) -> None:
-        self.create_and_authorize('a@gmail.com', '123qwe123', )
-
-    def test_register(self):
-        image = Image.new('RGB', (100, 100))
-
-        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
-        image.save(tmp_file)
-        tmp_file.seek(0)
-
+    @patch('authentication.task.send_registration_email.delay')
+    def test_register(self, delay):
         img = self.generate_photo_file()
-        data = {'email': 'a@gmail.com', 'password': '123qwe123', 'avatar_img': tmp_file}
-        response = self.client.post(reverse('auth_register'), data=data, format='multipart')
-        print(response)
+
+        with default_storage.open(img.name, 'wb') as f:
+            f.write(img.getvalue())
+
+        data = {'email': self.email, 'password': self.password, 'avatar_img': img.name}
+        response = self.client.post(reverse('auth-register'), data=data)
+
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['email'], self.email)
+        created_user = User.objects.get(email=self.email)
+        self.assertTrue(check_password(self.password, created_user.password))
+        delay.assert_called_once()
+
+    def test_register_wrong_email(self):
+        pass

@@ -145,4 +145,4 @@ EMAIL_HOST_USER = env.str('EMAIL')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = env.str('EMAIL')
 
-BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = "redis://localhost:6379/0"

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from lessons.views import LessonList
+from lessons.views import LessonViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),

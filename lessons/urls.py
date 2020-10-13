@@ -1,8 +1,8 @@
 from rest_framework.routers import DefaultRouter
 
-from lessons.views import LessonList, VoteView
+from lessons.views import LessonViewSet, VoteViewSet
 
 router = DefaultRouter()
-router.register('lessons', LessonList, basename='lessons')
-router.register('votes', VoteView, basename='votes')
+router.register('lessons', LessonViewSet, basename='lessons')
+router.register('votes', VoteViewSet, basename='votes')
 urlpatterns = router.urls
