@@ -20,25 +20,13 @@ class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwner]
+    filterset_fields = ['creator']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
 
     def perform_update(self, serializer):
         serializer.save()
-
-    @action(detail=False, methods=['post'])
-    def match(self, request):
-        user_id = request.data['user_id']
-        try:
-            user = User.objects.get(pk=user_id)  # TODO try block
-            user_lessons = Lesson.objects.filter(creator=user)
-            serializer = self.get_serializer(data=user_lessons, many=True)
-            serializer.is_valid()
-            serializer.save()
-            return Response(serializer.data)
-        except ObjectDoesNotExist:
-            return Response({'msg': 'Object doe not exist'}, status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['post'], url_path='toggle-like')
     def toggle_like(self, request, *args, **kwargs):

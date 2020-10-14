@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 import environs
 
@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_filters',
     'rest_framework',
+
 
     'authentication',
     'lessons',
@@ -59,7 +61,7 @@ ROOT_URLCONF = 'musicians_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,12 +139,17 @@ REST_FRAMEWORK = {
 
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 MEDIA_ROOT = 'media/img'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
 EMAIL_HOST_USER = env.str('EMAIL')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = env.str('EMAIL')
+EMAIL_USE_TLS = True
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"

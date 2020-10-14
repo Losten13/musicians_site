@@ -24,3 +24,5 @@ class APITestUser(APITestCase):
         self.authorize(user, **additional_headers)
         return user
 
+    def logout(self, **additional_headers):
+        self.client.credentials(**additional_headers)
