@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from authentication.models import User
+from authentication.models import User, Author, Subscription
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
@@ -21,3 +21,6 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Author)
+admin.site.register(Subscription)
+

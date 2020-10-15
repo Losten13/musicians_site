@@ -2,7 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
 
-from authentication.utils import upload_to
+from musicians_site.utils import upload_to
 
 
 class CustomUserManager(BaseUserManager):
@@ -35,12 +35,12 @@ class CustomUserManager(BaseUserManager):
 
 
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', max_length=255, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     avatar_img = models.ImageField(upload_to=upload_to, blank=True, default=None)
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -56,3 +56,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'users'
         verbose_name = 'user'
         verbose_name_plural = 'users'
+
+
+class Author(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+
+class Subscription(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'subscriptions'
+        verbose_name = 'subscription'
+        verbose_name_plural = 'subscriptions'
+
+
+

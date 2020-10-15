@@ -11,9 +11,7 @@ from authentication.serializers import RegisterSerializer, UserSerializer
 from authentication.task import send_registration_email
 
 
-
-
-class RegisterApi(GenericAPIView):
+class RegisterView(GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):

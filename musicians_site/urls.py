@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('lessons.urls')),
     path('auth/', include('authentication.urls')),
+    path('static/', include('static_content.urls'))
 ]
 

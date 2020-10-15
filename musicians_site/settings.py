@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'authentication',
     'lessons',
+    'static_content',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,9 @@ REST_FRAMEWORK = {
 }
 
 MEDIA_ROOT = 'media/img'
+IMAGE_FILE_EXTENSION = 'jpeg'
+
+DEFAULT_IMAGE_SIZE = 600, 400
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

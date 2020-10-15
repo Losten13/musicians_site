@@ -1,8 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers, validators
 
-from authentication.models import User
-from authentication.serializers import UserSerializer
+
 from .models import Lesson, Vote
 
 
@@ -23,3 +22,4 @@ class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = ('id', 'lesson', 'voted', 'is_voted')
+

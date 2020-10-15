@@ -17,6 +17,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from authentication.models import User
 from musicians_site.tests import APITestUser
+from musicians_site.utils import generate_photo_file
 
 
 class TestRegisterView(APITestUser):
@@ -25,18 +26,9 @@ class TestRegisterView(APITestUser):
         self.email = 'test11@gmail.com'
         self.password = '123qwe123'
 
-
-    def generate_photo_file(self):
-        file = io.BytesIO()
-        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
-        image.save(file, 'png')
-        file.name = 'test.png'
-        file.seek(0)
-        return file
-
     @patch('authentication.task.send_registration_email.delay')
     def test_register(self, delay):
-        img = self.generate_photo_file()
+        img = generate_photo_file()
 
         with default_storage.open(img.name, 'wb') as f:
             f.write(img.getvalue())
