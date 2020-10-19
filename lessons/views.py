@@ -1,30 +1,36 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import default_storage
-
-# Create your views here.
+from django.utils.decorators import method_decorator
+from drf_yasg2.utils import swagger_auto_schema
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from rest_framework.generics import ListAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from authentication.models import Subscription, Author, User
+from authentication.models import Subscription, Author
+from authentication.serializers import SubscriptionSerializer
 from lessons.models import Lesson, Vote
+from lessons.pagination import ResultSetPagination
 from lessons.permissions import IsOwner
-from lessons.serializers import LessonSerializer, VoteSerializer
+from lessons.serializers import LessonSerializer
+from django.http import JsonResponse
 
 from rest_framework.response import Response
 
 from lessons.task import send_notify_email
-from musicians_site.utils import upload_to
 
 
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(
+    auto_schema=None
+))
 class LessonViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwner]
     filterset_fields = ['creator']
+    pagination_class = ResultSetPagination
 
     def perform_create(self, serializer):
+        """Create lessons"""
         try:
             author = Author.objects.get(user=self.request.user)
         except Author.DoesNotExist:
@@ -33,7 +39,6 @@ class LessonViewSet(viewsets.ModelViewSet):
 
         author_subscriptions = Subscription.objects.filter(author=author)
         if author_subscriptions.count() > 0:
-            print(author_subscriptions)
             subscribers_emails = []
             for subscription in author_subscriptions:
                 subscribers_emails.append(subscription.subscriber.email)
@@ -49,6 +54,10 @@ class LessonViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='toggle-like',
             permission_classes=[permissions.IsAuthenticatedOrReadOnly, ])
     def toggle_like(self, request, *args, **kwargs):
+        '''
+        post:
+        Toggle like for lesson
+        '''
 
         lesson = self.get_object()
         try:
@@ -62,6 +71,10 @@ class LessonViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='subscribe',
             permission_classes=[permissions.IsAuthenticatedOrReadOnly, ])
     def subscribe(self, request, *args, **kwargs):
+        '''
+        post:
+        Subscribe to author of current lessons
+        '''
         lesson = self.get_object()
         author = Author.objects.get(user=lesson.creator)
         new_sub = Subscription(author=author, subscriber_id=request.user.id)
@@ -69,8 +82,17 @@ class LessonViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class VoteViewSet(viewsets.ModelViewSet):
-    authentication_classes = (JWTAuthentication,)
-    queryset = Vote.objects.all()
-    serializer_class = VoteSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
+class UserSubscriberView(ListAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request, *args, **kwargs):
+        '''
+        get:
+        Get subscribes of current user
+        '''
+        subs = self.queryset.filter(author=request.user.id).values()
+        serializer = SubscriptionSerializer(data=subs)
+        serializer.is_valid()
+        return JsonResponse({'subs': list(subs)})

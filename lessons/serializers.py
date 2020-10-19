@@ -1,18 +1,17 @@
-from django.db import transaction
-from rest_framework import serializers, validators
+from rest_framework import serializers
 
-
+from authentication.serializers import UserSerializer
 from .models import Lesson, Vote
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    creator = serializers.PrimaryKeyRelatedField(read_only=True)
+    creator = UserSerializer(read_only=True)
     votes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     lesson_img = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Lesson
-        fields = ('id', 'title', 'video_url', 'creator', 'votes', 'lesson_img')
+        fields = ('id', 'title', 'text', 'creator', 'votes', 'lesson_img')
 
 
 class VoteSerializer(serializers.ModelSerializer):
@@ -21,5 +20,4 @@ class VoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vote
-        fields = ('id', 'lesson', 'voted', 'is_voted')
-
+        fields = ('id', 'lesson', 'voted')

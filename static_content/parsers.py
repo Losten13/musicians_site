@@ -10,5 +10,3 @@ class ImageUploadParser(FileUploadParser):
     def get_filename(self, stream, media_type, parser_context):
         random_str = generate_random_str(7)
         return f'{random_str}.{IMAGE_FILE_EXTENSION}'
-
-

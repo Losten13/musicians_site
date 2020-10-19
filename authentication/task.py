@@ -1,5 +1,5 @@
 from celery import shared_task
-from django.core.mail import  EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from musicians_site.settings import EMAIL_HOST_USER

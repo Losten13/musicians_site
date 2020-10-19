@@ -22,4 +22,4 @@ def generate_photo_file():
     image.save(file, settings.IMAGE_FILE_EXTENSION)
     file.name = f'test.{settings.IMAGE_FILE_EXTENSION}'
     file.seek(0)
-    return file
+    return file.getvalue()

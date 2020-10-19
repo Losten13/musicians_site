@@ -1,8 +1,9 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from lessons.views import LessonViewSet, VoteViewSet
+from lessons.views import LessonViewSet, UserSubscriberView
 
 router = DefaultRouter()
 router.register('lessons', LessonViewSet, basename='lessons')
-router.register('votes', VoteViewSet, basename='votes')
 urlpatterns = router.urls
+urlpatterns.append(path('subscribers', UserSubscriberView.as_view(), name='subscribers'))

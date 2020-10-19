@@ -23,4 +23,3 @@ class CustomUserAdmin(BaseUserAdmin):
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Author)
 admin.site.register(Subscription)
-

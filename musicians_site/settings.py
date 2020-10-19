@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     'django_filters',
     'rest_framework',
+    'drf_yasg2',
+    'corsheaders',
 
 
     'authentication',
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -143,7 +146,29 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
-MEDIA_ROOT = 'media/img'
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000"
+]
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
+
+
+STATIC_ROOT = BASE_DIR / 'static'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 IMAGE_FILE_EXTENSION = 'jpeg'
 
 DEFAULT_IMAGE_SIZE = 600, 400
@@ -156,4 +181,5 @@ EMAIL_HOST_PASSWORD = env.str('EMAIL_PASSWORD')
 DEFAULT_FROM_EMAIL = env.str('EMAIL')
 EMAIL_USE_TLS = True
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'

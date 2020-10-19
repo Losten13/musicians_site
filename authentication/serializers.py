@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from authentication.models import User
+from authentication.models import User, Subscription
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,3 +29,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.avatar_img.name = validated_data['avatar_img']
         user.save()
         return user
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = ('id', 'author', 'subscriber')

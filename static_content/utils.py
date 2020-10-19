@@ -7,7 +7,6 @@ from django.conf import settings
 
 def resize_image(file, to_size=settings.DEFAULT_IMAGE_SIZE):
     try:
-
         img = Image.open(file)
         img.thumbnail(to_size)
         return img
@@ -18,4 +17,4 @@ def resize_image(file, to_size=settings.DEFAULT_IMAGE_SIZE):
 def bytes_from_image(image, extension):
     with io.BytesIO() as buff:
         image.save(buff, extension)
-    return buff.getvalue()
+        return buff.getvalue()

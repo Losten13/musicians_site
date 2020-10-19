@@ -34,8 +34,6 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-
-
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', max_length=255, unique=True)
     is_staff = models.BooleanField(default=False)
@@ -74,6 +72,3 @@ class Subscription(models.Model):
         db_table = 'subscriptions'
         verbose_name = 'subscription'
         verbose_name_plural = 'subscriptions'
-
-
-
